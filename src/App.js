@@ -4,7 +4,8 @@ import * as faceapi from 'face-api.js';
 
 function App() {
     const videoWidth = 480;
-    const videoHeight = 640;
+    const videoHeight = 360;
+    const videoFixHeight = 640 - 278;
     const [initializing, setInitializing] = useState(false);
     const videoRef = useRef();
     const canvasRef = useRef();
@@ -49,12 +50,12 @@ function App() {
             canvasRef.current.innerHTML = faceapi.createCanvasFromMedia(videoRef.current);
             const displaySize = {
                 width: videoWidth,
-                height: videoHeight
+                height: videoWidth
             }
             faceapi.matchDimensions(canvasRef.current, displaySize);
             const detections = await faceapi.detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceExpressions();
             const resizedDetection = faceapi.resizeResults(detections, displaySize);
-            canvasRef.current.getContext("2d").clearRect(0,0, videoWidth, videoHeight);
+            canvasRef.current.getContext("2d").clearRect(0,0, videoWidth, videoFixHeight);
             faceapi.draw.drawDetections(canvasRef.current, resizedDetection);
             faceapi.draw.drawFaceLandmarks(canvasRef.current, resizedDetection);
             faceapi.draw.drawFaceExpressions(canvasRef.current, detections);
@@ -66,32 +67,29 @@ function App() {
         <div>
             <p>{initializing ? "Initializing" : "Ready"}</p>
             <video ref={videoRef} autoPlay muted onPlay={handleVideoOnPlay}
-                style={
-                    {
-                        position:"absolute",
-                        marginLeft:"auto",
-                        marginRight:"auto",
-                        left:0,
-                        right:0,
-                        textAlign:"center",
-                        zIndex:9,
-                        width:videoWidth,
-                        height:videoHeight
-                    }
-                }
+                   style={
+                       {
+                           position:"absolute",
+                           marginLeft:"auto",
+                           marginRight:"auto",
+                           textAlign:"center",
+                           zIndex:9,
+                           width:videoWidth,
+                           height:videoHeight
+                       }
+                   }
             />
             <canvas ref={canvasRef}
                     style={
                         {
                             position:"relative",
-                            marginLeft:"auto",
-                            marginRight:"auto",
+                            margin:"auto",
                             left:0,
                             right:0,
                             textAlign:"center",
                             zIndex:9,
                             width:videoWidth,
-                            height:videoHeight
+                            height:videoFixHeight
                         }
                     }
             />
